@@ -10,7 +10,7 @@ if ($conn->connect_error) die("db_error");
 
 $id = $_POST['id'];
 
-$stmt = $conn->prepare("DELETE FROM users WHERE id=?");
+$stmt = $conn->prepare("DELETE FROM students WHERE id=?");
 $stmt->bind_param("i",$id);
 
 echo $stmt->execute() ? "success" : "error";

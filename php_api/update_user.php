@@ -20,7 +20,7 @@ if(isset($_FILES['image']) && $_FILES['image']['name']!=''){
     move_uploaded_file($_FILES['image']['tmp_name'], __DIR__."/images/".$imageName);
 
     $stmt = $conn->prepare(
-    "UPDATE users SET student_id=?,name=?,email=?,phone=?,department=?,image=? WHERE id=?"
+    "UPDATE students SET student_id=?,name=?,email=?,phone=?,department=?,image=? WHERE id=?"
     );
     $stmt->bind_param(
     "ssssssi",
@@ -28,7 +28,7 @@ if(isset($_FILES['image']) && $_FILES['image']['name']!=''){
     );
 }else{
     $stmt = $conn->prepare(
-    "UPDATE users SET student_id=?,name=?,email=?,phone=?,department=? WHERE id=?"
+    "UPDATE students SET student_id=?,name=?,email=?,phone=?,department=? WHERE id=?"
     );
     $stmt->bind_param(
     "sssssi",

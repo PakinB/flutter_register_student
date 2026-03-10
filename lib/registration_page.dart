@@ -1,5 +1,3 @@
-// (ยาวมาก ตัดคำอธิบายออกเพื่อให้ชัดเจน)
-
 import 'dart:io' as io;
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -27,12 +25,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Uint8List? _webImage;
   String? _fileName;
 
+
   static const String baseUrl =
       "http://localhost/flutter_register_student/php_api";
 
   Future<void> pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+
     if (picked == null) return;
+
     _fileName = picked.name;
 
     if (kIsWeb) {
@@ -40,18 +44,26 @@ class _RegistrationPageState extends State<RegistrationPage> {
     } else {
       _imageFile = io.File(picked.path);
     }
+
     setState(() {});
   }
 
   Future<void> insertUser() async {
 
-    if(_studentId.text.isEmpty ||
-       _name.text.isEmpty ||
-       _email.text.isEmpty ||
-       _phone.text.isEmpty ||
-       _department.text.isEmpty ||
-       _fileName == null){
-         return;
+    if (_studentId.text.isEmpty ||
+        _name.text.isEmpty ||
+        _email.text.isEmpty ||
+        _phone.text.isEmpty ||
+        _department.text.isEmpty ||
+        _fileName == null) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("กรุณากรอกข้อมูลให้ครบ"),
+        ),
+      );
+
+      return;
     }
 
     final request = http.MultipartRequest(
@@ -65,50 +77,130 @@ class _RegistrationPageState extends State<RegistrationPage> {
     request.fields['phone'] = _phone.text.trim();
     request.fields['department'] = _department.text.trim();
 
-    if(kIsWeb){
-      request.files.add(http.MultipartFile.fromBytes(
-        "image", _webImage!, filename: _fileName));
-    }else{
-      request.files.add(await http.MultipartFile.fromPath(
-        "image", _imageFile!.path));
+    if (kIsWeb) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          "image",
+          _webImage!,
+          filename: _fileName,
+        ),
+      );
+    } else {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          "image",
+          _imageFile!.path,
+        ),
+      );
     }
 
     final response =
         await http.Response.fromStream(await request.send());
 
-    if(response.body.trim()=="success"){
+    if (response.body.trim() == "success") {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("บันทึกสำเร็จ"),
+        ),
+      );
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const UserListPage()),
+        MaterialPageRoute(
+          builder: (_) => const UserListPage(name: ""),
+        ),
+      );
+
+    } else {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${response.body}"),
+        ),
       );
     }
   }
 
+  Widget previewImage() {
+
+    if (kIsWeb && _webImage != null) {
+      return Image.memory(_webImage!, height: 150);
+    }
+
+    if (_imageFile != null) {
+      return Image.file(_imageFile!, height: 150);
+    }
+
+    return const Text("No Image Selected");
+  }
+
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Registration")),
+      appBar: AppBar(
+        title: const Text("Registration"),
+      ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
+
         child: Column(
           children: [
-            TextField(controller:_studentId,
-              decoration:const InputDecoration(labelText:"Student ID")),
-            TextField(controller:_name,
-              decoration:const InputDecoration(labelText:"Name")),
-            TextField(controller:_email,
-              decoration:const InputDecoration(labelText:"Email")),
-            TextField(controller:_phone,
-              decoration:const InputDecoration(labelText:"Phone")),
-            TextField(controller:_department,
-              decoration:const InputDecoration(labelText:"Department")),
-            const SizedBox(height:15),
+
+            TextField(
+              controller: _studentId,
+              decoration: const InputDecoration(
+                labelText: "Student ID",
+              ),
+            ),
+
+            TextField(
+              controller: _name,
+              decoration: const InputDecoration(
+                labelText: "Name",
+              ),
+            ),
+
+            TextField(
+              controller: _email,
+              decoration: const InputDecoration(
+                labelText: "Email",
+              ),
+            ),
+
+            TextField(
+              controller: _phone,
+              decoration: const InputDecoration(
+                labelText: "Phone",
+              ),
+            ),
+
+            TextField(
+              controller: _department,
+              decoration: const InputDecoration(
+                labelText: "Department",
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            previewImage(),
+
+            const SizedBox(height: 10),
+
             ElevatedButton(
-              onPressed:pickImage,
-              child:const Text("Choose Image")),
+              onPressed: pickImage,
+              child: const Text("Choose Image"),
+            ),
+
+            const SizedBox(height: 10),
+
             ElevatedButton(
-              onPressed:insertUser,
-              child:const Text("Save")),
+              onPressed: insertUser,
+              child: const Text("Save"),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'registration_page.dart';
+import 'Login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: false, // 🔥 บรรทัดนี้สำคัญ
       ),
-      home: const RegistrationPage(),
+      home: const LoginPage(),
+      
     );
+    
   }
 }

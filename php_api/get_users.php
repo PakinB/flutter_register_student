@@ -11,7 +11,7 @@ if ($conn->connect_error) die(json_encode(["error"=>"db_error"]));
 
 $result = $conn->query(
 "SELECT id,student_id,name,email,phone,department,image 
- FROM users ORDER BY id DESC"
+ FROM students ORDER BY id DESC"
 );
 
 $data = [];

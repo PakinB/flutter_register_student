@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'edit_user_page.dart';
 import 'registration_page.dart';
-
+import 'Login.dart';
 class UserListPage extends StatefulWidget {
-  const UserListPage({super.key});
+  const UserListPage({super.key, required this.name});
+  final String name;
 
   @override
   State<UserListPage> createState() => _UserListPageState();
@@ -50,7 +51,18 @@ class _UserListPageState extends State<UserListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Student List"),
-      ),
+      actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            },
+          )
+        ],),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
